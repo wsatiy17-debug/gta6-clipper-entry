@@ -45,6 +45,25 @@ if (
   process.exit(1);
 }
 
+const url = (parsed as Record<string, unknown>).url as string;
+if (url.trim().length === 0) {
+  console.error('VIDEO.json "url" must not be an empty string.');
+  process.exit(1);
+}
+
+let parsedUrl: URL;
+try {
+  parsedUrl = new URL(url);
+} catch {
+  console.error(`VIDEO.json "url" is not a valid URL: ${url}`);
+  process.exit(1);
+}
+
+if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+  console.error(`VIDEO.json "url" must use the http: or https: protocol, got ${parsedUrl.protocol}.`);
+  process.exit(1);
+}
+
 mkdirSync(OUTPUT_DIR, { recursive: true });
 writeFileSync(targetPath, bytes);
 console.log(`Wrote ${targetPath}`);
